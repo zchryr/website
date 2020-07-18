@@ -1,212 +1,242 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="utf-8" />
     <title>Zachary Rohrbach</title>
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <link rel="shortcut icon" href="./img/favicon.png"/>
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <link rel="shortcut icon" href="./img/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#868686" />
     <link rel="manifest" href="manifest.json" />
-    <script type='text/javascript' src='./js/dat.gui.min.js'></script>
-    <script type='text/javascript' src='./js/jquery.min.js'></script>
+    <script type="text/javascript" src="./js/dat.gui.min.js"></script>
+    <script type="text/javascript" src="./js/jquery.min.js"></script>
     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.5/dat.gui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> -->
     <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' data: fonts.gstatic.com;"> -->
     <!-- inline spinner styles to be able to display spinner right away -->
     <style type="text/css">
-        *,
-        *:before,
-        *:after {
-            box-sizing: border-box;
-        }
+      *,
+      *:before,
+      *:after {
+        box-sizing: border-box;
+      }
 
-        html,
-        body {
-            height: 100%;
-            overflow: hidden;
-            background: white;
-        }
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+        background: white;
+      }
 
+      .split {
+        width: 400px;
+        height: 400px;
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        -webkit-perspective: 400px;
+        perspective: 400px;
+      }
+
+      @media only screen and (max-width: 600px) {
         .split {
-            width: 400px;
-            height: 400px;
-            position: absolute;
-            top: 40%;
-            left: 50%;
-            -webkit-transform: translate(-50%, -50%);
-            transform: translate(-50%, -50%);
-            -webkit-perspective: 400px;
-            perspective: 400px;
+          width: 300px;
+          height: 300px;
+          top: 30%;
         }
+      }
 
-        @media only screen and (max-width: 600px) {
-            .split {
-                width: 300px;
-                height: 300px;
-                top: 30%;
-            }
-        }
+      .split:before {
+        content: "Zachary Rohrbach";
+        color: #777;
+        letter-spacing: 1px;
+        font-size: 14px;
+        position: absolute;
+        bottom: -30px;
+        left: 50%;
+        -webkit-transform: translate(-50%);
+        transform: translate(-50%);
+      }
 
-        .split:before {
-            content: 'Zachary Rohrbach';
-            color: #777;
-            letter-spacing: 1px;
-            font-size: 14px;
-            position: absolute;
-            bottom: -30px;
-            left: 50%;
-            -webkit-transform: translate(-50%);
-            transform: translate(-50%);
-        }
+      .split img {
+        height: auto;
+        width: 100%;
+        opacity: 0;
+      }
 
-        .split img {
-            height: auto;
-            width: 100%;
-            opacity: 0;
-        }
+      .split div {
+        position: absolute;
+        z-index: 1;
+        background-repeat: no-repeat;
+        -webkit-transform: rotateY(-50deg) scale(0.5);
+        transform: rotateY(-50deg) scale(0.5);
+        opacity: 0;
+        -webkit-transform-origin: bottom;
+        transform-origin: bottom;
+        transition: all 1s cubic-bezier(0.21, 0.05, 0.09, 0.91);
+      }
 
-        .split div {
-            position: absolute;
-            z-index: 1;
-            background-repeat: no-repeat;
-            -webkit-transform: rotateY(-50deg) scale(0.5);
-            transform: rotateY(-50deg) scale(0.5);
-            opacity: 0;
-            -webkit-transform-origin: bottom;
-            transform-origin: bottom;
-            transition: all 1s cubic-bezier(0.21, 0.05, 0.09, 0.91);
-        }
+      .split.active div {
+        opacity: 1;
+        -webkit-transform: rotate(0deg) translateY(0);
+        transform: rotate(0deg) translateY(0);
+      }
 
-        .split.active div {
-            opacity: 1;
-            -webkit-transform: rotate(0deg) translateY(0);
-            transform: rotate(0deg) translateY(0);
-        }
+      .split.active div:hover {
+        -webkit-transform: rotateY(-50deg) scale(0.5);
+        transform: rotateY(-50deg) scale(0.5);
+        opacity: 0;
+        transition-delay: 0 !;
+        transition: all 1s cubic-bezier(0.21, 0.05, 0.09, 0.91);
+      }
 
-        .split.active div:hover {
-            -webkit-transform: rotateY(-50deg) scale(0.5);
-            transform: rotateY(-50deg) scale(0.5);
-            opacity: 0;
-            transition-delay: 0 !;
-            transition: all 1s cubic-bezier(0.21, 0.05, 0.09, 0.91);
-        }
+      .button-wrapper {
+        display: flex;
+        flex-direction: column;
 
-        .graphite-flat-button {
-            position: absolute;
-            opacity: 0;
-            bottom: 100px;
-            left: 50%;
-            margin-left: -100px;
-            vertical-align: top;
-            width: 200px;
-            height: 60px;
-            padding: 0;
-            font-size: 22px;
-            color: white;
-            text-align: center;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-            background: #454545;
-            border: 0;
-            border-bottom: 2px solid #2f2e2e;
-            cursor: pointer;
-            -webkit-box-shadow: inset 0 -2px #2f2e2e;
-            box-shadow: inset 0 -2px #2f2e2e;
-        }
-
-        /* .graphite-flat-button:active {
-            top: 1px;
-            outline: none;
-            -webkit-box-shadow: none;
-            box-shadow: none;
-            } */
-        .graphite-flat-button.visible {
-            opacity: 1;
-            transition: opacity 1s cubic-bezier(0.21, 0.05, 0.09, 0.91);
-        }
+        position: absolute;
+        bottom: 12px;
+        left: 50%;
+        margin-left: -100px;
+      }
+      .flat-button {
+        opacity: 0;
+        margin-top: 16px;
+        vertical-align: top;
+        width: 200px;
+        height: 60px;
+        padding: 0;
+        font-size: 22px;
+      }
+      .flat-button:hover {
+        top: 1px;
+        outline: none;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+      }
+      .flat-button.visible {
+        opacity: 1;
+        transition: opacity 1s cubic-bezier(0.21, 0.05, 0.09, 0.91);
+      }
+      .graphite-flat-button {
+        color: white;
+        text-align: center;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+        background: #454545;
+        border: 0;
+        border-bottom: 2px solid #2f2e2e;
+        cursor: pointer;
+        -webkit-box-shadow: inset 0 -2px #2f2e2e;
+        box-shadow: inset 0 -2px #2f2e2e;
+      }
+      .clouds-flat-button {
+        color: #454545;
+        text-align: center;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+        background: #ecf0f1;
+        border: 0;
+        border-bottom: 2px solid #dadedf;
+        cursor: pointer;
+        -webkit-box-shadow: inset 0 -2px #dadedf;
+        box-shadow: inset 0 -2px #dadedf;
+      }
     </style>
     <script>
-        function shuffle(array) {
-            var currentIndex = array.length, temporaryValue, randomIndex;
-            // While there remain elements to shuffle...
-            while (0 !== currentIndex) {
-                // Pick a remaining element...
-                randomIndex = Math.floor(Math.random() * currentIndex);
-                currentIndex -= 1;
-                // And swap it with the current element.
-                temporaryValue = array[currentIndex];
-                array[currentIndex] = array[randomIndex];
-                array[randomIndex] = temporaryValue;
-            }
-            return array;
+      function shuffle(array) {
+        var currentIndex = array.length,
+          temporaryValue,
+          randomIndex;
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+          // Pick a remaining element...
+          randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex -= 1;
+          // And swap it with the current element.
+          temporaryValue = array[currentIndex];
+          array[currentIndex] = array[randomIndex];
+          array[randomIndex] = temporaryValue;
         }
-        var Split = function () {
-            this.$t = $(".split");
-            this.gridX = 6;
-            this.gridY = 4;
-            this.w = this.$t.width();
-            this.h = this.$t.height();
-            this.img = $("img", this.$t).attr("src");
-            this.delay = 0.02;
-            this.coordinates = [];
-            // create array of coordinates
-            for (x = 0; x < this.gridX; x++) {
-                for (y = 0; y < this.gridY; y++) {
-                    this.coordinates.push([x, y]);
-                }
-            }
-            this.coordinates = shuffle(this.coordinates);
-            this.create = function () {
-                $("div", this.$t).remove();
-                for (index = 0; index < this.coordinates.length; index++) {
-                    var coord = this.coordinates[index];
-                    console.log(coord)
-                    var x = coord[0];
-                    var y = coord[1];
-                    var width = this.w / this.gridX * 101 / this.w + "%",
-                        height = this.h / this.gridY * 101 / this.h + "%",
-                        top = this.h / this.gridY * y * 100 / this.h + "%",
-                        left = this.w / this.gridX * x * 100 / this.w + "%",
-                        bgPosX = -(this.w / this.gridX * x) + "px",
-                        bgPosY = -(this.h / this.gridY * y) + "px";
-                    $("<div />")
-                        .css({
-                            top: top,
-                            left: left,
-                            width: width,
-                            height: height,
-                            backgroundImage: "url(" + this.img + ")",
-                            backgroundPosition: bgPosX + " " + bgPosY,
-                            backgroundSize: this.w + "px",
-                            transitionDelay: index * this.delay + index * this.delay + "s"
-                        })
-                        .appendTo(this.$t);
-                }
-            };
-            this.create();
+        return array;
+      }
+      var Split = function () {
+        this.$t = $(".split");
+        this.gridX = 6;
+        this.gridY = 4;
+        this.w = this.$t.width();
+        this.h = this.$t.height();
+        this.img = $("img", this.$t).attr("src");
+        this.delay = 0.02;
+        this.coordinates = [];
+        // create array of coordinates
+        for (x = 0; x < this.gridX; x++) {
+          for (y = 0; y < this.gridY; y++) {
+            this.coordinates.push([x, y]);
+          }
+        }
+        this.coordinates = shuffle(this.coordinates);
+        this.create = function () {
+          $("div", this.$t).remove();
+          for (index = 0; index < this.coordinates.length; index++) {
+            var coord = this.coordinates[index];
+            console.log(coord);
+            var x = coord[0];
+            var y = coord[1];
+            var width = ((this.w / this.gridX) * 101) / this.w + "%",
+              height = ((this.h / this.gridY) * 101) / this.h + "%",
+              top = ((this.h / this.gridY) * y * 100) / this.h + "%",
+              left = ((this.w / this.gridX) * x * 100) / this.w + "%",
+              bgPosX = -((this.w / this.gridX) * x) + "px",
+              bgPosY = -((this.h / this.gridY) * y) + "px";
+            $("<div />")
+              .css({
+                top: top,
+                left: left,
+                width: width,
+                height: height,
+                backgroundImage: "url(" + this.img + ")",
+                backgroundPosition: bgPosX + " " + bgPosY,
+                backgroundSize: this.w + "px",
+                transitionDelay: index * this.delay + index * this.delay + "s",
+              })
+              .appendTo(this.$t);
+          }
         };
-        window.onload = function () {
-            var split = new Split();
-            setTimeout(() => {
-                $(".split").toggleClass("active");
-                setTimeout(() => {
-                    $(".graphite-flat-button").toggleClass("visible");
-                }, 1500);
-            }, 100);
-        };
+        this.create();
+      };
+      window.onload = function () {
+        var split = new Split();
+        setTimeout(() => {
+          $(".split").toggleClass("active");
+          setTimeout(() => {
+            $(".flat-button").toggleClass("visible");
+          }, 1500);
+        }, 100);
+      };
     </script>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="split">
-        <img src="./img/ZR_Black_Print.png" />
+      <img src="./img/ZR_Black_Print.png" />
     </div>
 
-    <a href="https://rohrbach.tech/downloads/Zachary-Rohrbach-Resume.pdf" download="Zachary-Rohrbach-Resume.pdf">
-    	<button class="graphite-flat-button">Resume Download</button>
-    </a>
-
-</body>
-
+    <div class="button-wrapper">
+      <a
+        href="https://rohrbach.tech/downloads/Zachary-Rohrbach-Resume.pdf"
+        download="Zachary-Rohrbach-Resume.pdf"
+      >
+        <button class="graphite-flat-button flat-button">
+          Resume Download
+        </button>
+      </a>
+      <a
+        href="https://rohrbach.tech/downloads/Zachary-Rohrbach-Resume.pdf"
+        download="Zachary-Rohrbach-Resume.pdf"
+      >
+        <button class="clouds-flat-button flat-button">Test</button>
+      </a>
+    </div>
+  </body>
 </html>
